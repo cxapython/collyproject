@@ -1,38 +1,43 @@
 package mongodb
 
 import (
-"collyproject/config"
-"github.com/globalsign/mgo"
+	"collyproject/config"
+	"context"
+	"fmt"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-"time"
 )
 
-var session *mgo.Session
-
-type SessionStore struct {
-	session *mgo.Session
-}
+var (
+	client *mongo.Database
+)
 
 func init() {
-	var err error
-	session, err = mgo.DialWithTimeout(config.MongoConf["connect"], 5*time.Second)
-	if err != nil {
-		log.Panic(err)
+	// Set client options
+	clientOptions := options.Client().ApplyURI(config.MongoConf["connect"])
+
+
+	// Connect to MongoDB
+	if clt, err := mongo.Connect(context.TODO(), clientOptions); err != nil {
+		log.Fatalln(err)
+	} else {
+		if err := clt.Ping(context.TODO(), nil); err != nil {
+			log.Fatalln(err)
+		}
+		client = clt.Database(config.MongoConf["database"])
+
 	}
-	session.SetMode(mgo.Monotonic, true)
+	//collection := client.Collection("users")
+
+	fmt.Println("Connected to MongoDB!")
 }
 
-func GetS() *SessionStore {
-	return &SessionStore{
-		session: session.Copy(),
-	}
-}
-//get client instance
-func (s *SessionStore) GetC(cName string) *mgo.Collection {
-	return s.session.DB(config.MongoConf["database"]).C(cName)
+type Collection struct {
+	collection *mongo.Collection
+	database *mongo.Database
 }
 
-
-func (s *SessionStore) Close() {
-	s.session.Close()
+func GetConnection() *mongo.Database {
+	return client
 }

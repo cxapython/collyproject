@@ -2,9 +2,11 @@ package main
 
 import (
 	"collyproject/dbhelper/mongodb"
+	"context"
 	"encoding/json"
-	"github.com/globalsign/mgo/bson"
 	"github.com/gocolly/colly"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"os"
 	"strings"
@@ -19,8 +21,7 @@ type Course struct {
 }
 
 func main() {
-	db := mongodb.GetS()
-	defer db.Close()
+	db := mongodb.GetConnection()
 
 	// Instantiate default collector
 	c := colly.NewCollector(
@@ -90,7 +91,8 @@ func main() {
 
 		// Dump json to the standard output
 		enc.Encode(course)
-		db.GetC("course").Upsert(bson.M{"url": course.URL}, bson.M{"$set": course})
+
+		db.Collection("course").UpdateOne(context.TODO(),bson.M{"url": course.URL}, bson.M{"$set": course},options.Update().SetUpsert(true))
 
 
 		log.Println("now data", course)
