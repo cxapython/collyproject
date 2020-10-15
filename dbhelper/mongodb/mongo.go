@@ -13,9 +13,10 @@ var (
 	client *mongo.Database
 )
 
+var Conf = config.Config
 func init() {
 	// Set client options
-	clientOptions := options.Client().ApplyURI(config.MongoConf["connect"])
+	clientOptions := options.Client().ApplyURI(Conf.GetString("MONGO.URL"))
 
 
 	// Connect to MongoDB
@@ -25,7 +26,7 @@ func init() {
 		if err := clt.Ping(context.TODO(), nil); err != nil {
 			log.Fatalln(err)
 		}
-		client = clt.Database(config.MongoConf["database"])
+		client = clt.Database(Conf.GetString("MONGO.DB_NAME"))
 
 	}
 	//collection := client.Collection("users")

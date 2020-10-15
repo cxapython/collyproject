@@ -2,6 +2,7 @@ package main
 
 import (
 	"collyproject/dbhelper/mongodb"
+	"collyproject/fetcher"
 	"context"
 	"encoding/json"
 	"github.com/gocolly/colly"
@@ -14,25 +15,18 @@ import (
 
 // Course stores information about a coursera course
 type Course struct {
-	Title       string
-	Description string
-	Creator     string
-	URL         string
+	Title       string `bson:"title"`
+	Description string `bson:"description"`
+	Creator     string `bson:"author"`
+	URL         string `bson:"url"`
 }
+
 
 func main() {
 	db := mongodb.GetConnection()
 
 	// Instantiate default collector
-	c := colly.NewCollector(
-		// Visit only domains: coursera.org, www.coursera.org
-		colly.AllowedDomains("coursera.org", "www.coursera.org"),
-
-		// Cache responses to prevent multiple download of pages
-		// even if the collector is restarted
-		colly.CacheDir("./coursera_cache"),
-	)
-
+	c := fetcher.CreateCollector()
 	// mongo backend
 	//storage := &mongo.Storage{
 	//	Database: "course_colly",

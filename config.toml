@@ -1,0 +1,9 @@
+[CRAWLER]
+DEBUG_MODE=true
+DELAY=0
+RANDOM_DELAY=1
+Parallelism = 2
+Async = false
+[MONGO]
+URL= "mongodb://localhost:27017"
+DB_NAME="collyproject"
