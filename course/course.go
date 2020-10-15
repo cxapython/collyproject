@@ -95,6 +95,7 @@ func main() {
 
 	// Start scraping on http://coursera.com/browse
 	c.Visit("https://coursera.org/browse")
+	c.Wait()
 
 
 
