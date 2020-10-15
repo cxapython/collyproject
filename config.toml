@@ -4,6 +4,7 @@ DELAY=0
 RANDOM_DELAY=1
 Parallelism = 2
 Async = false
+USE_PROXY=false
 [MONGO]
 URL= "mongodb://localhost:27017"
 DB_NAME="collyproject"
